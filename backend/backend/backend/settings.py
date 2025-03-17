@@ -88,7 +88,14 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# Enable foreign key support for SQLite
+from django.db import connection
 
+def enable_foreign_keys():
+    with connection.cursor() as cursor:
+        cursor.execute('PRAGMA foreign_keys = ON;')
+
+enable_foreign_keys()
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

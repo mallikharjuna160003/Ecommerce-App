@@ -4,6 +4,9 @@ from django.db.models.signals import post_save
 
 from shortuuid.django_fields import ShortUUIDField
 
+import logging
+logger = logging.getLogger(__name__)
+
 """"
 custom user model name can be anything.
 extending the AbstractUser model.
@@ -23,7 +26,7 @@ class User(AbstractUser):
     
     # override the save() method
     def save(self, *args, **kwargs):
-        email_username, mobile = self.email.split("@"), self.phone
+        email_username, mobile = self.email.split("@")[0], self.phone
         if self.full_name == "" or self.full_name == None:
             self.full_name = email_username
         if self.username == "" or self.username == None:
@@ -62,6 +65,7 @@ class Profile(models.Model):
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
+        logger.info(f"Creating profile for user {instance.email}")
         Profile.objects.create(user=instance)
 
 def save_user_profile(sender, instance, **kwargs):
